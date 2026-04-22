@@ -1,0 +1,41 @@
+{
+  "name": "user-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js",
+  "test": "cross-env NODE_ENV=test jest --coverage --runInBand",
+  "test:watch": "cross-env NODE_ENV=test jest --watch --runInBand"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "ajv": "^8.18.0",
+    "axios": "^1.14.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dompurify": "^3.3.3",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.1.0",
+    "jsdom": "^29.0.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "prisma": "^6.19.2",
+    "sequelize": "^6.37.7",
+    "sharp": "^0.34.5",
+    "sqlite3": "^5.0.2",
+    "xss-clean": "^0.1.4",
+    "zxcvbn": "^4.4.2"
+  },
+  "description": "",
+  "devDependencies": {
+    "@types/multer": "^2.0.0"
+  }
+}

@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  name             String
+  role             String         @default("student")
+  passwordHash     String?
+  avatar           String?
+  provider         String         @default("local")
+  apiKeys          ApiKey[]
+  posts            Post[]
+  
+  // NEW: Account lockout fields (Task 3)
+  failedLoginCount Int            @default(0)
+  lockedUntil      DateTime?
+  
+  // NEW: Relation to Refresh Tokens (Task 2)
+  refreshTokens    RefreshToken[]
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@map("users")
+}
+
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+
+  @@map("posts")
+}
+
+model ApiKey {
+  id                Int       @id @default(autoincrement())
+  userId            Int       @map("user_id")
+  user              User      @relation(fields: [userId], references: [id])
+  keyPrefix         String    @map("key_prefix")
+  keyHash           String    @map("key_hash")
+  name              String    @default("Default Project")
+  status            String    @default("active")
+  plan              String    @default("free")
+  monthlyQuota      Int       @default(100) @map("monthly_quota")
+  requestsThisMonth Int       @default(0) @map("requests_this_month")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  lastUsedAt        DateTime? @map("last_used_at")
+
+  @@map("api_keys")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique  // We will store the hashed token here
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}

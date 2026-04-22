@@ -11,8 +11,23 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: lab_user
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: backend_lab_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -24,6 +39,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Jest tests
+      - name: Setup test database
+        run: |
+          echo "DATABASE_URL=postgresql://lab_user:testpass@localhost:5432/backend_lab_test" >> $GITHUB_ENV
+          echo "JWT_SECRET=ci-test-secret-not-for-production" >> $GITHUB_ENV
+          echo "NODE_ENV=test" >> $GITHUB_ENV
+
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+
+      - name: Run integration tests
         run: npm test
-        
